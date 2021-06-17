@@ -124,19 +124,19 @@
             <div class="col-lg-4 col-xl-3">
                 <h5 class="text-spacing-200 text-capitalize">매장 검색</h5>
                 <div class="row">
-                  <input class="storesearch-input" id="key" type="text" name="name">
-                  <a class="button button-xl button-primary button-storesearch" href="javascript:searchCoordinateToAddress();">검색</a>
+                  <input class="storesearch-input" id="address" type="text" name="address">
+                  <p id="addr_submit" class="button button-xl button-primary button-storesearch">검색</p>
                 </div>
-              <ul class="nav list-category list-category-down-md-inline-block">
+              <ul id="addrList" class="nav list-category list-category-down-md-inline-block">
                 <li class="list-category-item wow fadeInRight" role="presentation" data-wow-delay="0s"><a class="active" href="#tabs-4-1" data-toggle="tab">About us</a></li>
                 <li class="list-category-item wow fadeInRight" role="presentation" data-wow-delay=".1s"><a href="#tabs-4-2" data-toggle="tab">Our Mission</a></li>
                 <li class="list-category-item wow fadeInRight" role="presentation" data-wow-delay=".2s"><a href="#tabs-4-3" data-toggle="tab">Our Goals</a></li>
                 <li class="list-category-item wow fadeInRight" role="presentation" data-wow-delay=".3s"><a href="#tabs-4-4" data-toggle="tab">Our Values</a></li>
-              </ul><a class="button button-xl button-primary button-winona" href="contacts.html">Contact us</a>
+              </ul>
             </div>
             <div class="col-lg-8 col-xl-9">
               <div class="container">
-                  <h4>서구청점</h4>
+                  <h4 id="addr_header"></h4>
                   <div id="map" class="store-map">
                     <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=7v1k4qhk9t&callback=initMap"></script>
                     <!-- <script type="text/javascript"> 

@@ -2,11 +2,12 @@
 // var marketId = new Array();
 //     marketId.push({ name : "서구청 직영점", addr : "인천 서구 탁옥로30"});
 //     marketId.push({ name : "인하대 직영점", addr : "인천 미추홀구 인하로 89"});
-//     marketId.push({ name : "구월동 직영점", addr : "안천 남동대로 700-1"});
-//     marketId.push({ name : "영종도점", addr : "인천 중구 운남동로 3번길"});
+//     marketId.push({ name : "구월동 직영점", addr : "인천 남동대로 700-1"});
+//     marketId.push({ name : "영종도점", addr : "인천 중구 운남동로3번길 17 1층 105호"});
 //     marketId.push({ name : "검단사거리점", addr : "인천 서구 검단로487번길 4"});
-//     marketId.push({ name : "송도신도시점", addr : "인천광역시 연수구 아트센터대로 8"});
+//     marketId.push({ name : "송도신도시점", addr : "인천 연수구 아트센터대로 87 401동 140호"});
 //     marketId.push({ name : "부평구청점", addr : "인천 부평구 주부토로 143"});
+//     marketId.push({ name : "가톨릭대점", addr : "경기 부천시 지봉로 43-3"});
 // var map = null;
 
 // var mapOptions = {
@@ -771,7 +772,16 @@
 
 
 
-
+var marketId = new Array();
+    marketId.push({ name : "서구청 직영점", addr : "인천 서구 탁옥로30"});
+    marketId.push({ name : "인하대 직영점", addr : "인천 미추홀구 인하로 89"});
+    marketId.push({ name : "구월동 직영점", addr : "인천 남동대로 700-1"});
+    marketId.push({ name : "영종도점", addr : "인천 중구 운남동로3번길 17 1층 105호"});
+    marketId.push({ name : "검단사거리점", addr : "인천 서구 검단로487번길 4"});
+    marketId.push({ name : "송도신도시점", addr : "인천 연수구 아트센터대로 87 401동 140호"});
+    marketId.push({ name : "부평구청점", addr : "인천 부평구 주부토로 143"});
+    marketId.push({ name : "가톨릭대점", addr : "경기 부천시 지봉로 43-3"});
+    
 var map = new naver.maps.Map("map", {
     center: new naver.maps.LatLng(37.3595316, 127.1052133),
     zoom: 18,
@@ -782,75 +792,24 @@ var infoWindow = new naver.maps.InfoWindow({
     anchorSkew: true
 });
 
+
+// var markerOptions = {
+//     position: position.destinationPoint(90, 15),
+//     map: map,
+//     icon: {
+//         url: HOME_PATH +'/img/example/sally.png',
+//         size: new naver.maps.Size(50, 52),
+//         origin: new naver.maps.Point(0, 0),
+//         anchor: new naver.maps.Point(25, 26)
+//     }
+// };
+
+// var marker = new naver.maps.Marker(markerOptions);
+
 map.setCursor('pointer');
 
-function initGeocoder() {
-    if (!map.isStyleMapReady) {
-        return;
-    }
-
-    map.addListener('click', function(e) {
-        searchCoordinateToAddress(e.coord);
-    });
-
-	$("#key").keyup(function(e){
-		var code=(e.keyCode?e.keyCode:e.which);
-		if(code == 13){
-			searchCoordinateToAddress($('#address').val());
-		}
-	});
-
-    $('#submit').on('click', function(e) {
-        e.preventDefault();
-
-        searchAddressToCoordinate($('#address').val());
-    });
-
-    searchAddressToCoordinate('인천 서구 탁옥로30');
-
-}
-
-
-
-function searchCoordinateToAddress(latlng) {
-
-    infoWindow.close();
-
-    naver.maps.Service.reverseGeocode({
-        coords: latlng,
-        orders: [
-            naver.maps.Service.OrderType.ADDR,
-            naver.maps.Service.OrderType.ROAD_ADDR
-        ].join(',')
-    }, function(status, response) {
-        if (status === naver.maps.Service.Status.ERROR) {
-            return alert('Something Wrong!');
-        }
-
-        var items = response.v2.results,
-            address = '',
-            htmlAddresses = [];
-
-        for (var i=0, ii=items.length, item, addrType; i<ii; i++) {
-            item = items[i];
-            address = makeAddress(item) || '';
-            addrType = item.name === 'roadaddr' ? '[도로명 주소]' : '[지번 주소]';
-
-            htmlAddresses.push((i+1) +'. '+ addrType +' '+ address);
-        }
-
-        infoWindow.setContent([
-            '<div style="padding:10px;min-width:200px;line-height:150%;">',
-            '<h4 style="margin-top:5px;">검색 좌표</h4><br />',
-            htmlAddresses.join('<br />'),
-            '</div>'
-        ].join('\n'));
-
-        infoWindow.open(map, latlng);
-    });
-}
-
 function searchAddressToCoordinate(address) {
+
     naver.maps.Service.geocode({
         query: address
     }, function(status, response) {
@@ -873,6 +832,11 @@ function searchAddressToCoordinate(address) {
         if (item.jibunAddress) {
             htmlAddresses.push('[지번 주소] ' + item.jibunAddress);
         }
+
+        if (item.englishAddress) {
+            htmlAddresses.push('[영문명 주소] ' + item.englishAddress);
+        }
+
         infoWindow.setContent([
             '<div style="padding:10px;min-width:200px;line-height:150%;">',
             '<h4 style="margin-top:5px;">검색 주소 : '+ address +'</h4><br />',
@@ -885,6 +849,42 @@ function searchAddressToCoordinate(address) {
     });
 }
 
+function initGeocoder() {
+    if (!map.isStyleMapReady) {
+        return;
+    }
+
+    $('#address').on('keydown', function(e) {
+        var keyCode = e.which;
+
+        if (keyCode === 13) { // Enter Key
+            searchStore( $('#address').val() );
+            if( $('#addrList').children().length > 0 ){
+                $('#addrList').children()[0].click();
+            }
+        }
+    });
+
+    $('#addr_submit').on('click', function(e) {
+        e.preventDefault();
+
+        searchStore( $('#address').val() );
+
+        if( $('#addrList').children().length > 0 ){
+            $('#addrList').children()[0].click();
+        }
+    });
+
+    $('#addrList').on('click', "li", function(e) {
+        e.preventDefault();
+
+        searchAddressToCoordinate( e.target.textContent );
+        headerSet( e.target.getAttribute('name') );
+    });
+
+    searchAddressToCoordinate('인천 서구 탁옥로30');
+    headerSet('서구청 직영점');
+}
 
 function makeAddress(item) {
     if (!item) {
@@ -960,5 +960,57 @@ function hasAddition (addition) {
     return !!(addition && addition.value);
 }
 
+function searchStore( storeAddr ){
+    
+    var storeList = [];
+
+    if("" === storeAddr || " " === storeAddr){
+        alert("검색어를 입력해주세요.");
+        return ;
+    }
+
+    for(var i=0;i < marketId.length;i++){
+        if(marketId[i].addr.includes(storeAddr)){
+            storeList.push(marketId[i]);
+        }
+    }
+    
+    var cell = document.getElementById("addrList"); 
+    while ( cell.hasChildNodes() ) { 
+        cell.removeChild( cell.firstChild ); 
+    }
+
+    if( storeList.length > 0){
+        listUp(storeList);
+    }
+}
+
+function headerSet( headerName ){
+    $('#addr_header').text(headerName);
+
+}
+
+function listUp( storeList ){
+    for(var i=0;i < storeList.length; i++){
+
+        const li = document.createElement("li");
+        // 2-2. li에 id 속성 추가 
+        li.setAttribute('id', "li_addr");
+        li.setAttribute('class', 'list-category-item wow fadeInRight');
+        li.setAttribute('role', "presentation");
+        li.setAttribute('name', storeList[i].name);
+
+        const a = document.createElement("p");
+        a.setAttribute('data-toggle', "tab");
+        a.setAttribute('name', storeList[i].name);
+        a.innerHTML = storeList[i].addr;
+
+        li.appendChild(a);
+        
+        // 3. 생성된 li를 ol에 추가
+        document.getElementById('addrList').appendChild(li);
+    }
+}
+
 naver.maps.onJSContentLoaded = initGeocoder;
-naver.maps.Event.once(map, 'init_stylemap', initGeocoder);
+// naver.maps.Event.once(map, 'init_stylemap', initGeocoder);
